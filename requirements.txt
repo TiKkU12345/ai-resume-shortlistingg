@@ -5,3 +5,4 @@ transformers>=4.40.0
 scikit-learn
 numpy
 plotly>=5.22.0
+PyPDF2>=3.0.1
