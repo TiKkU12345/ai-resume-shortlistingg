@@ -1,0 +1,285 @@
+================================================================================
+CANDIDATE RANKING REPORT
+================================================================================
+
+Position: Senior Python Developer
+Required Experience: 3+ years
+Key Skills: Python, SQL, AWS, NLP
+
+================================================================================
+Total Candidates Evaluated: 10
+================================================================================
+
+
+================================================================================
+RANK #1: John Doe
+================================================================================
+Overall Match Score: 63.36%
+Email: john.doe@email.com
+Phone: 234-567-8900
+Total Experience: 1.0 years
+
+Score Breakdown:
+  • Skills Match: 71.43%
+  • Experience Match: 60.0%
+  • Education Match: 100.0%
+
+✓ Matched Skills (7): 
+  aws, tensorflow, sql, docker, python, react, machine learning
+
+✗ Missing Skills (4): 
+  pytorch, nlp, kubernetes, rest api
+
+Assessment: Good match. Candidate has relevant skills but may have some gaps.
+
+Strengths:
+  ✓ Strong skills match (7 matching skills)
+  ✓ Meets education requirements
+
+Weaknesses:
+  ✗ Needs 2.0 more years of experience
+
+Recommendation:
+  → Consider for phone screen
+  → Assess proficiency in: pytorch, nlp, kubernetes
+
+================================================================================
+RANK #2: Name Not Found
+================================================================================
+Overall Match Score: 42.0%
+Email: Gwaliormksingh.kaurav@gmail.com
+Phone: +91 7049676947
+Total Experience: 7.0 years
+
+Score Breakdown:
+  • Skills Match: 0.0%
+  • Experience Match: 90.0%
+  • Education Match: 100.0%
+
+✗ Missing Skills (11): 
+  aws, tensorflow, docker, python, react, machine learning, pytorch, nlp, sql, kubernetes
+
+Assessment: Moderate match. Consider if willing to train or if skills are transferable.
+
+Strengths:
+  ✓ Meets experience requirement (7.0 years)
+  ✓ Meets education requirements
+
+Weaknesses:
+  ✗ Missing 11 required skills
+
+Recommendation:
+  → Consider other candidates first
+
+================================================================================
+RANK #3: AMAN KATYAYAN
+================================================================================
+Overall Match Score: 35.0%
+Email: amankatyayan8@gmail.com
+Phone: 8340772182
+Total Experience: 0.0 years
+
+Score Breakdown:
+  • Skills Match: 20.0%
+  • Experience Match: 40.0%
+  • Education Match: 100.0%
+
+✓ Matched Skills (1): 
+  sql
+
+✗ Missing Skills (10): 
+  aws, tensorflow, docker, python, react, machine learning, pytorch, nlp, kubernetes, rest api
+
+Assessment: Low match. Significant gaps in required qualifications.
+
+Strengths:
+  ✓ Meets education requirements
+
+Weaknesses:
+  ✗ Missing 10 required skills
+  ✗ Needs 3.0 more years of experience
+
+Recommendation:
+  → Consider other candidates first
+
+================================================================================
+RANK #4: Dhnacha Bhavan Kurud
+================================================================================
+Overall Match Score: 19.55%
+Email: alifili07101@gmail.com
+Phone: +918450836709
+Total Experience: 0.0 years
+
+Score Breakdown:
+  • Skills Match: 0.0%
+  • Experience Match: 40.0%
+  • Education Match: 50.0%
+
+✗ Missing Skills (11): 
+  aws, tensorflow, docker, python, react, machine learning, pytorch, nlp, sql, kubernetes
+
+Assessment: Low match. Significant gaps in required qualifications.
+
+Weaknesses:
+  ✗ Missing 11 required skills
+  ✗ Needs 3.0 more years of experience
+  ✗ May not meet education requirements
+
+Recommendation:
+  → Consider other candidates first
+
+================================================================================
+RANK #5: Arunav Kumar
+================================================================================
+Overall Match Score: 19.5%
+Email: arunav11a31.hts21@gmail.com
+Phone: +91 8002933460
+Total Experience: 0.0 years
+
+Score Breakdown:
+  • Skills Match: 0.0%
+  • Experience Match: 40.0%
+  • Education Match: 50.0%
+
+✗ Missing Skills (11): 
+  aws, tensorflow, docker, python, react, machine learning, pytorch, nlp, sql, kubernetes
+
+Assessment: Low match. Significant gaps in required qualifications.
+
+Weaknesses:
+  ✗ Missing 11 required skills
+  ✗ Needs 3.0 more years of experience
+  ✗ May not meet education requirements
+
+Recommendation:
+  → Consider other candidates first
+
+================================================================================
+RANK #6: Name Not Found
+================================================================================
+Overall Match Score: 19.5%
+Email: 
+Phone: 0 1 2 3
+Total Experience: 0.0 years
+
+Score Breakdown:
+  • Skills Match: 0.0%
+  • Experience Match: 40.0%
+  • Education Match: 50.0%
+
+✗ Missing Skills (11): 
+  aws, tensorflow, docker, python, react, machine learning, pytorch, nlp, sql, kubernetes
+
+Assessment: Low match. Significant gaps in required qualifications.
+
+Weaknesses:
+  ✗ Missing 11 required skills
+  ✗ Needs 3.0 more years of experience
+  ✗ May not meet education requirements
+
+Recommendation:
+  → Consider other candidates first
+
+================================================================================
+RANK #7: Shristi
+================================================================================
+Overall Match Score: 19.5%
+Email: 
+Phone: 0 1 2 3
+Total Experience: 0.0 years
+
+Score Breakdown:
+  • Skills Match: 0.0%
+  • Experience Match: 40.0%
+  • Education Match: 50.0%
+
+✗ Missing Skills (11): 
+  aws, tensorflow, docker, python, react, machine learning, pytorch, nlp, sql, kubernetes
+
+Assessment: Low match. Significant gaps in required qualifications.
+
+Weaknesses:
+  ✗ Missing 11 required skills
+  ✗ Needs 3.0 more years of experience
+  ✗ May not meet education requirements
+
+Recommendation:
+  → Consider other candidates first
+
+================================================================================
+RANK #8: Kumar Abhishek
+================================================================================
+Overall Match Score: 19.5%
+Email: abhishekkumar.jsr55@gmail.com
+Phone: +91-8210034263
+Total Experience: 0.0 years
+
+Score Breakdown:
+  • Skills Match: 0.0%
+  • Experience Match: 40.0%
+  • Education Match: 50.0%
+
+✗ Missing Skills (11): 
+  aws, tensorflow, docker, python, react, machine learning, pytorch, nlp, sql, kubernetes
+
+Assessment: Low match. Significant gaps in required qualifications.
+
+Weaknesses:
+  ✗ Missing 11 required skills
+  ✗ Needs 3.0 more years of experience
+  ✗ May not meet education requirements
+
+Recommendation:
+  → Consider other candidates first
+
+================================================================================
+RANK #9: Maheshwari
+================================================================================
+Overall Match Score: 19.5%
+Email: maheshwaripulkit25@gmail.com
+Phone: 8005624648
+Total Experience: 0.0 years
+
+Score Breakdown:
+  • Skills Match: 0.0%
+  • Experience Match: 40.0%
+  • Education Match: 50.0%
+
+✗ Missing Skills (11): 
+  aws, tensorflow, docker, python, react, machine learning, pytorch, nlp, sql, kubernetes
+
+Assessment: Low match. Significant gaps in required qualifications.
+
+Weaknesses:
+  ✗ Missing 11 required skills
+  ✗ Needs 3.0 more years of experience
+  ✗ May not meet education requirements
+
+Recommendation:
+  → Consider other candidates first
+
+================================================================================
+RANK #10: Aswirya Putra
+================================================================================
+Overall Match Score: 19.5%
+Email: 
+Phone: 
+Total Experience: 0.0 years
+
+Score Breakdown:
+  • Skills Match: 0.0%
+  • Experience Match: 40.0%
+  • Education Match: 50.0%
+
+✗ Missing Skills (11): 
+  aws, tensorflow, docker, python, react, machine learning, pytorch, nlp, sql, kubernetes
+
+Assessment: Low match. Significant gaps in required qualifications.
+
+Weaknesses:
+  ✗ Missing 11 required skills
+  ✗ Needs 3.0 more years of experience
+  ✗ May not meet education requirements
+
+Recommendation:
+  → Consider other candidates first

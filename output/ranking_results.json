@@ -1,0 +1,368 @@
+[
+  {
+    "name": "John Doe",
+    "email": "john.doe@email.com",
+    "phone": "234-567-8900",
+    "overall_score": 63.36,
+    "skills_score": 71.43,
+    "experience_score": 60.0,
+    "education_score": 100.0,
+    "total_experience": 1.0,
+    "matched_skills": [
+      "aws",
+      "tensorflow",
+      "sql",
+      "docker",
+      "python",
+      "react",
+      "machine learning"
+    ],
+    "missing_skills": [
+      "pytorch",
+      "nlp",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Good match. Candidate has relevant skills but may have some gaps.",
+      "strengths": [
+        "Strong skills match (7 matching skills)",
+        "Meets education requirements"
+      ],
+      "weaknesses": [
+        "Needs 2.0 more years of experience"
+      ],
+      "recommendations": [
+        "Consider for phone screen",
+        "Assess proficiency in: pytorch, nlp, kubernetes"
+      ]
+    }
+  },
+  {
+    "name": "Name Not Found",
+    "email": "Gwaliormksingh.kaurav@gmail.com",
+    "phone": "+91 7049676947",
+    "overall_score": 42.0,
+    "skills_score": 0.0,
+    "experience_score": 90.0,
+    "education_score": 100.0,
+    "total_experience": 7.0,
+    "matched_skills": [],
+    "missing_skills": [
+      "aws",
+      "tensorflow",
+      "docker",
+      "python",
+      "react",
+      "machine learning",
+      "pytorch",
+      "nlp",
+      "sql",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Moderate match. Consider if willing to train or if skills are transferable.",
+      "strengths": [
+        "Meets experience requirement (7.0 years)",
+        "Meets education requirements"
+      ],
+      "weaknesses": [
+        "Missing 11 required skills"
+      ],
+      "recommendations": [
+        "Consider other candidates first"
+      ]
+    }
+  },
+  {
+    "name": "AMAN KATYAYAN",
+    "email": "amankatyayan8@gmail.com",
+    "phone": "8340772182",
+    "overall_score": 35.0,
+    "skills_score": 20.0,
+    "experience_score": 40.0,
+    "education_score": 100.0,
+    "total_experience": 0.0,
+    "matched_skills": [
+      "sql"
+    ],
+    "missing_skills": [
+      "aws",
+      "tensorflow",
+      "docker",
+      "python",
+      "react",
+      "machine learning",
+      "pytorch",
+      "nlp",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Low match. Significant gaps in required qualifications.",
+      "strengths": [
+        "Meets education requirements"
+      ],
+      "weaknesses": [
+        "Missing 10 required skills",
+        "Needs 3.0 more years of experience"
+      ],
+      "recommendations": [
+        "Consider other candidates first"
+      ]
+    }
+  },
+  {
+    "name": "Dhnacha Bhavan Kurud",
+    "email": "alifili07101@gmail.com",
+    "phone": "+918450836709",
+    "overall_score": 19.55,
+    "skills_score": 0.0,
+    "experience_score": 40.0,
+    "education_score": 50.0,
+    "total_experience": 0.0,
+    "matched_skills": [],
+    "missing_skills": [
+      "aws",
+      "tensorflow",
+      "docker",
+      "python",
+      "react",
+      "machine learning",
+      "pytorch",
+      "nlp",
+      "sql",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Low match. Significant gaps in required qualifications.",
+      "strengths": [],
+      "weaknesses": [
+        "Missing 11 required skills",
+        "Needs 3.0 more years of experience",
+        "May not meet education requirements"
+      ],
+      "recommendations": [
+        "Consider other candidates first"
+      ]
+    }
+  },
+  {
+    "name": "Arunav Kumar",
+    "email": "arunav11a31.hts21@gmail.com",
+    "phone": "+91 8002933460",
+    "overall_score": 19.5,
+    "skills_score": 0.0,
+    "experience_score": 40.0,
+    "education_score": 50.0,
+    "total_experience": 0.0,
+    "matched_skills": [],
+    "missing_skills": [
+      "aws",
+      "tensorflow",
+      "docker",
+      "python",
+      "react",
+      "machine learning",
+      "pytorch",
+      "nlp",
+      "sql",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Low match. Significant gaps in required qualifications.",
+      "strengths": [],
+      "weaknesses": [
+        "Missing 11 required skills",
+        "Needs 3.0 more years of experience",
+        "May not meet education requirements"
+      ],
+      "recommendations": [
+        "Consider other candidates first"
+      ]
+    }
+  },
+  {
+    "name": "Name Not Found",
+    "email": "",
+    "phone": "0 1 2 3",
+    "overall_score": 19.5,
+    "skills_score": 0.0,
+    "experience_score": 40.0,
+    "education_score": 50.0,
+    "total_experience": 0.0,
+    "matched_skills": [],
+    "missing_skills": [
+      "aws",
+      "tensorflow",
+      "docker",
+      "python",
+      "react",
+      "machine learning",
+      "pytorch",
+      "nlp",
+      "sql",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Low match. Significant gaps in required qualifications.",
+      "strengths": [],
+      "weaknesses": [
+        "Missing 11 required skills",
+        "Needs 3.0 more years of experience",
+        "May not meet education requirements"
+      ],
+      "recommendations": [
+        "Consider other candidates first"
+      ]
+    }
+  },
+  {
+    "name": "Shristi",
+    "email": "",
+    "phone": "0 1 2 3",
+    "overall_score": 19.5,
+    "skills_score": 0.0,
+    "experience_score": 40.0,
+    "education_score": 50.0,
+    "total_experience": 0.0,
+    "matched_skills": [],
+    "missing_skills": [
+      "aws",
+      "tensorflow",
+      "docker",
+      "python",
+      "react",
+      "machine learning",
+      "pytorch",
+      "nlp",
+      "sql",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Low match. Significant gaps in required qualifications.",
+      "strengths": [],
+      "weaknesses": [
+        "Missing 11 required skills",
+        "Needs 3.0 more years of experience",
+        "May not meet education requirements"
+      ],
+      "recommendations": [
+        "Consider other candidates first"
+      ]
+    }
+  },
+  {
+    "name": "Kumar Abhishek",
+    "email": "abhishekkumar.jsr55@gmail.com",
+    "phone": "+91-8210034263",
+    "overall_score": 19.5,
+    "skills_score": 0.0,
+    "experience_score": 40.0,
+    "education_score": 50.0,
+    "total_experience": 0.0,
+    "matched_skills": [],
+    "missing_skills": [
+      "aws",
+      "tensorflow",
+      "docker",
+      "python",
+      "react",
+      "machine learning",
+      "pytorch",
+      "nlp",
+      "sql",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Low match. Significant gaps in required qualifications.",
+      "strengths": [],
+      "weaknesses": [
+        "Missing 11 required skills",
+        "Needs 3.0 more years of experience",
+        "May not meet education requirements"
+      ],
+      "recommendations": [
+        "Consider other candidates first"
+      ]
+    }
+  },
+  {
+    "name": "Maheshwari",
+    "email": "maheshwaripulkit25@gmail.com",
+    "phone": "8005624648",
+    "overall_score": 19.5,
+    "skills_score": 0.0,
+    "experience_score": 40.0,
+    "education_score": 50.0,
+    "total_experience": 0.0,
+    "matched_skills": [],
+    "missing_skills": [
+      "aws",
+      "tensorflow",
+      "docker",
+      "python",
+      "react",
+      "machine learning",
+      "pytorch",
+      "nlp",
+      "sql",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Low match. Significant gaps in required qualifications.",
+      "strengths": [],
+      "weaknesses": [
+        "Missing 11 required skills",
+        "Needs 3.0 more years of experience",
+        "May not meet education requirements"
+      ],
+      "recommendations": [
+        "Consider other candidates first"
+      ]
+    }
+  },
+  {
+    "name": "Aswirya Putra",
+    "email": "",
+    "phone": "",
+    "overall_score": 19.5,
+    "skills_score": 0.0,
+    "experience_score": 40.0,
+    "education_score": 50.0,
+    "total_experience": 0.0,
+    "matched_skills": [],
+    "missing_skills": [
+      "aws",
+      "tensorflow",
+      "docker",
+      "python",
+      "react",
+      "machine learning",
+      "pytorch",
+      "nlp",
+      "sql",
+      "kubernetes",
+      "rest api"
+    ],
+    "explanation": {
+      "summary": "Low match. Significant gaps in required qualifications.",
+      "strengths": [],
+      "weaknesses": [
+        "Missing 11 required skills",
+        "Needs 3.0 more years of experience",
+        "May not meet education requirements"
+      ],
+      "recommendations": [
+        "Consider other candidates first"
+      ]
+    }
+  }
+]

@@ -1,0 +1,93 @@
+{
+  "contact": {
+    "name": "AMAN KATYAYAN",
+    "email": "amankatyayan8@gmail.com",
+    "phone": "8340772182",
+    "linkedin": "linkedin.com/in/aman-katyayan-18813921a",
+    "github": "github.com/16172000",
+    "location": ""
+  },
+  "summary": "",
+  "experience": [],
+  "education": [
+    {
+      "degree": "",
+      "institution": "(04/2016 - 04/2017)",
+      "field_of_study": "",
+      "start_date": "2016",
+      "end_date": "2017",
+      "gpa": "",
+      "location": ""
+    },
+    {
+      "degree": "",
+      "institution": "76%",
+      "field_of_study": "",
+      "start_date": "",
+      "end_date": "",
+      "gpa": "",
+      "location": ""
+    },
+    {
+      "degree": "",
+      "institution": "(04/2018 - 04/2019)",
+      "field_of_study": "",
+      "start_date": "2018",
+      "end_date": "2019",
+      "gpa": "",
+      "location": ""
+    },
+    {
+      "degree": "",
+      "institution": "62%",
+      "field_of_study": "",
+      "start_date": "",
+      "end_date": "",
+      "gpa": "",
+      "location": ""
+    },
+    {
+      "degree": "B.TECH",
+      "institution": "(07/2019 - 07/2023)",
+      "field_of_study": "",
+      "start_date": "2019",
+      "end_date": "2023",
+      "gpa": "",
+      "location": ""
+    },
+    {
+      "degree": "",
+      "institution": "82.34% (TILL 7th SEMESTER)",
+      "field_of_study": "",
+      "start_date": "",
+      "end_date": "",
+      "gpa": "",
+      "location": ""
+    }
+  ],
+  "skills": {
+    "web": [
+      "HTML",
+      "CSS",
+      "ASP.NET",
+      "jQuery"
+    ],
+    "database": [
+      "SQL",
+      "SQL Server"
+    ]
+  },
+  "projects": [],
+  "certifications": [
+    {
+      "name": "WEBSITE FRONTEND DEVELOPMENT from Chhattisgarh",
+      "issuer": "",
+      "date": ""
+    }
+  ],
+  "achievements": [],
+  "languages": [],
+  "total_experience_years": 0.0,
+  "file_name": "AmanKatyayan_Resume.pdf",
+  "parsed_date": "2025-10-14T20:10:30.037220"
+}

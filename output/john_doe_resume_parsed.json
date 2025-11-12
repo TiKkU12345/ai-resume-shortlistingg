@@ -1,0 +1,69 @@
+{
+  "contact": {
+    "name": "John Doe",
+    "email": "john.doe@email.com",
+    "phone": "234-567-8900",
+    "linkedin": "linkedin.com/in/johndoe",
+    "github": "",
+    "location": ""
+  },
+  "summary": "",
+  "experience": [
+    {
+      "company": "Tech Corp | Jan 2020 - Present",
+      "position": "Senior Software Engineer",
+      "start_date": "Jan 2020",
+      "end_date": "2020",
+      "duration": "0 year",
+      "description": "- Developed ML models using Python and TensorFlow - Led team of 5 engineers - Improved system performance by 40%",
+      "location": ""
+    },
+    {
+      "company": "StartUp Inc | Jun 2018 - Dec 2019",
+      "position": "Software Engineer",
+      "start_date": "Jun 2018",
+      "end_date": "Dec 2019",
+      "duration": "1 year",
+      "description": "- Built web applications using React and Node.js - Implemented CI/CD pipelines",
+      "location": ""
+    }
+  ],
+  "education": [
+    {
+      "degree": "Bachelor",
+      "institution": "",
+      "field_of_study": "Computer Science",
+      "start_date": "2014",
+      "end_date": "2018",
+      "gpa": "",
+      "location": ""
+    }
+  ],
+  "skills": {
+    "programming": [
+      "Python",
+      "JavaScript"
+    ],
+    "web": [
+      "React"
+    ],
+    "database": [
+      "SQL"
+    ],
+    "ml_ai": [
+      "Machine Learning",
+      "TensorFlow"
+    ],
+    "cloud": [
+      "AWS",
+      "Docker"
+    ]
+  },
+  "projects": [],
+  "certifications": [],
+  "achievements": [],
+  "languages": [],
+  "total_experience_years": 1.0,
+  "file_name": "john_doe_resume.pdf",
+  "parsed_date": "2025-11-11T20:43:59.875793"
+}
