@@ -102,12 +102,10 @@ class ResumeShortlistingApp:
             self.page_analytics()
     
     def render_sidebar(self):
-    """Render sidebar navigation"""
-    with st.sidebar:
-        st.image("https://dummyimage.com/200x80/667eea/ffffff&text=AI+Recruiter")
+        """Render sidebar navigation"""
+        with st.sidebar:
+            st.image("https://dummyimage.com/200x80/667eea/ffffff&text=AI+Recruiter")
 
-            
-            
             st.markdown("---")
             
             # Navigation
