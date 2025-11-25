@@ -1,6 +1,7 @@
 """
 AI Resume Shortlisting - Web Interface using Streamlit
 Beautiful, interactive dashboard for resume screening and ranking
+FIXED VERSION - All errors resolved
 """
 
 import streamlit as st
@@ -13,6 +14,16 @@ import plotly.express as px
 from resume_parser import ResumeParser
 from job_resume_matcher import CandidateRanker, JobDescriptionParser
 from datetime import datetime
+from email_integration import EmailManager, render_email_panel
+from bulk_upload import render_bulk_upload_ui
+from interview_questions import render_question_generator_ui
+from database import SupabaseManager
+from authentication import (
+    AuthManager, 
+    render_auth_page, 
+    render_auth_sidebar, 
+    require_auth
+)
 
 # Page configuration
 st.set_page_config(
@@ -63,6 +74,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+
 class ResumeShortlistingApp:
     """Main application class for the web interface"""
     
@@ -71,16 +83,56 @@ class ResumeShortlistingApp:
         self.ranker = CandidateRanker()
         self.job_parser = JobDescriptionParser()
         
+        # Initialize database with error handling
+        try:
+            self.db = SupabaseManager()
+            self.db_available = True
+        except Exception as e:
+            st.error(f"⚠️ Database connection failed: {str(e)}")
+            st.info("The app will continue with limited functionality (no persistence).")
+            self.db_available = False
+            self.db = None
+        
+        # Initialize authentication
+        try:
+            self.auth_manager = AuthManager()
+        except Exception as e:
+            st.warning(f"Authentication initialization warning: {str(e)}")
+            self.auth_manager = None
+        
         # Initialize session state
-        if 'parsed_resumes' not in st.session_state:
-            st.session_state.parsed_resumes = []
-        if 'ranked_candidates' not in st.session_state:
-            st.session_state.ranked_candidates = []
-        if 'job_description' not in st.session_state:
-            st.session_state.job_description = ""
+        self._initialize_session_state()
+    
+    def _initialize_session_state(self):
+        """Initialize all session state variables"""
+        defaults = {
+            'parsed_resumes': [],
+            'ranked_candidates': [],
+            'job_description': "",
+            'current_job_id': None,
+            'current_job_title': "",
+            'page': 'Dashboard',
+            'authenticated': False,
+            'user_email': None
+        }
+        
+        for key, value in defaults.items():
+            if key not in st.session_state:
+                st.session_state[key] = value
+    
+    def navigate_to(self, page_name):
+        """Safe navigation helper"""
+        st.session_state.page = page_name
+        st.rerun()
     
     def run(self):
         """Main application runner"""
+        
+        # Check authentication first (if available)
+        if self.auth_manager and not self.auth_manager.is_authenticated():
+            render_auth_page()
+            return
+
         # Header
         st.title("🎯 AI Resume Shortlisting System")
         st.markdown("**Intelligent Resume Screening powered by Machine Learning**")
@@ -88,35 +140,67 @@ class ResumeShortlistingApp:
         
         # Sidebar
         self.render_sidebar()
+        if self.auth_manager:
+            render_auth_sidebar()
         
         # Main content based on selected page
-        page = st.session_state.get('page', 'Upload Resumes')
+        page = st.session_state.get('page', 'Dashboard')
+
+        # Route to appropriate page
+        page_methods = {
+            'Dashboard': self.page_dashboard,
+            'Upload Resumes': self.page_upload_resumes,
+            'Bulk Upload': self.page_bulk_upload,
+            'Job Description': self.page_job_description,
+            'Rankings': self.page_rankings,
+            'Send Emails': self.page_send_emails,
+            'Interview Questions': self.page_interview_questions,
+            'Analytics': self.page_analytics,
+            'History': self.page_history,
+            'Search': self.page_search
+        }
         
-        if page == 'Upload Resumes':
-            self.page_upload_resumes()
-        elif page == 'Job Description':
-            self.page_job_description()
-        elif page == 'Rankings':
-            self.page_rankings()
-        elif page == 'Analytics':
-            self.page_analytics()
+        page_method = page_methods.get(page, self.page_dashboard)
+        page_method()
     
     def render_sidebar(self):
         """Render sidebar navigation"""
         with st.sidebar:
+            # Logo - Fixed: removed use_container_width parameter
             st.image("https://via.placeholder.com/200x80/667eea/ffffff?text=AI+Recruiter", 
-        use_container_width=True)
-            
-            
+                    width=200)
             st.markdown("---")
             
-            # Navigation
+            # Navigation using callback to avoid state modification error
             st.header("📋 Navigation")
-            page = st.radio(
+            
+            # Store current selection
+            current_page = st.session_state.get('page', 'Dashboard')
+            
+            pages = [
+                "Dashboard",
+                "Upload Resumes",
+                "Bulk Upload",
+                "Job Description",
+                "Rankings",
+                "Send Emails",
+                "Interview Questions",
+                "Analytics",
+                "History",
+                "Search"
+            ]
+            
+            # Use radio without modifying session_state in callback
+            selected_page = st.radio(
                 "Go to:",
-                ["Upload Resumes", "Job Description", "Rankings", "Analytics"],
-                key='page'
+                pages,
+                index=pages.index(current_page) if current_page in pages else 0
             )
+            
+            # Update page if changed
+            if selected_page != current_page:
+                st.session_state.page = selected_page
+                st.rerun()
             
             st.markdown("---")
             
@@ -131,13 +215,301 @@ class ResumeShortlistingApp:
             
             st.markdown("---")
             
-            # Clear data button
-            if st.button("🗑️ Clear All Data", use_container_width=True):
+            # Clear data button with callback
+            def clear_all_data():
                 st.session_state.parsed_resumes = []
                 st.session_state.ranked_candidates = []
                 st.session_state.job_description = ""
+                st.session_state.current_job_id = None
+                st.session_state.current_job_title = ""
+            
+            if st.button("🗑️ Clear All Data", use_container_width=True, on_click=clear_all_data):
                 st.success("Data cleared!")
                 st.rerun()
+    
+    # ==================== NEW PAGES ====================
+    
+    def page_bulk_upload(self):
+        """Bulk resume upload page"""
+        try:
+            render_bulk_upload_ui(self.parser, self.db if self.db_available else None)
+        except Exception as e:
+            st.error(f"Error in bulk upload: {str(e)}")
+            st.info("Please check your parser configuration.")
+
+    def page_send_emails(self):
+        """Email sending page"""
+        if not st.session_state.ranked_candidates:
+            st.warning("⚠️ No candidates to email. Please rank candidates first!")
+            if st.button("Go to Rankings"):
+                self.navigate_to('Rankings')
+            return
+        
+        try:
+            render_email_panel(
+                st.session_state.ranked_candidates,
+                st.session_state.get('current_job_title', 'Open Position')
+            )
+        except Exception as e:
+            st.error(f"Email functionality error: {str(e)}")
+            st.info("""
+            **Email Setup Required:**
+            1. Enable 2-Factor Authentication on your Gmail account
+            2. Generate an App Password: https://myaccount.google.com/apppasswords
+            3. Update your email configuration with the 16-character app password
+            
+            **Note:** Regular Gmail passwords won't work due to security restrictions.
+            """)
+
+    def page_interview_questions(self):
+        """Interview questions page"""
+        st.header("🎯 Generate Interview Questions")
+        
+        if not st.session_state.ranked_candidates:
+            st.warning("⚠️ No candidates available. Please rank candidates first!")
+            if st.button("Go to Rankings"):
+                self.navigate_to('Rankings')
+            return
+        
+        # Select candidate
+        st.markdown("### Select Candidate")
+        
+        candidate_names = [c['name'] for c in st.session_state.ranked_candidates]
+        selected_name = st.selectbox("Choose candidate:", candidate_names)
+        
+        if selected_name:
+            selected_candidate = next(
+                c for c in st.session_state.ranked_candidates 
+                if c['name'] == selected_name
+            )
+            
+            job_title = st.text_input(
+                "Job Title",
+                value=st.session_state.get('current_job_title', 'Software Engineer')
+            )
+            
+            if st.button("Generate Questions", type="primary"):
+                try:
+                    render_question_generator_ui(selected_candidate, job_title)
+                except Exception as e:
+                    st.error(f"Question generation error: {str(e)}")
+
+    def page_dashboard(self):
+        """Analytics dashboard"""
+        st.header("📊 Dashboard")
+        
+        # Get stats from database if available, otherwise from session
+        if self.db_available:
+            try:
+                stats = self.db.get_analytics_summary()
+            except Exception as e:
+                st.warning(f"Could not load database stats: {str(e)}")
+                stats = {
+                    'total_resumes': len(st.session_state.parsed_resumes),
+                    'total_jobs': 0,
+                    'total_rankings': len(st.session_state.ranked_candidates)
+                }
+        else:
+            stats = {
+                'total_resumes': len(st.session_state.parsed_resumes),
+                'total_jobs': 0,
+                'total_rankings': len(st.session_state.ranked_candidates)
+            }
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("📄 Total Resumes", stats.get('total_resumes', 0))
+        
+        with col2:
+            st.metric("💼 Job Postings", stats.get('total_jobs', 0))
+        
+        with col3:
+            st.metric("🎯 Rankings Done", stats.get('total_rankings', 0))
+        
+        st.markdown("---")
+        st.markdown("### 📋 Recent Jobs")
+        
+        if self.db_available:
+            try:
+                jobs = self.db.get_all_job_postings()
+                
+                if jobs:
+                    for job in jobs[:5]:
+                        col_a, col_b = st.columns([3, 1])
+                        with col_a:
+                            st.write(f"**{job['title']}**")
+                        with col_b:
+                            st.write(job['created_at'][:10])
+                else:
+                    st.info("No jobs yet! Go to Job Description tab to create one.")
+            except Exception as e:
+                st.warning(f"Database error: {str(e)}")
+                st.info("Could not load job history. Database tables may need to be created.")
+        else:
+            st.info("Database not available. Job history requires database connection.")
+    
+    def page_history(self):
+        """View past job postings and rankings"""
+        st.header("📚 Ranking History")
+        
+        if not self.db_available:
+            st.warning("⚠️ Database not available. History feature requires database connection.")
+            st.info("Recent rankings are available in the Rankings tab.")
+            if st.button("Go to Rankings"):
+                self.navigate_to('Rankings')
+            return
+        
+        try:
+            jobs = self.db.get_all_job_postings()
+        except Exception as e:
+            st.error(f"Failed to load job history: {str(e)}")
+            st.info("""
+            **Database tables may be missing.** Please run this SQL to create them:
+            
+            ```sql
+            CREATE TABLE IF NOT EXISTS public.job_postings (
+                id SERIAL PRIMARY KEY,
+                job_title VARCHAR(255) NOT NULL,
+                job_description TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            ```
+            """)
+            return
+        
+        if not jobs:
+            st.info("No history yet. Match some candidates first!")
+            if st.button("Go to Job Description"):
+                self.navigate_to('Job Description')
+            return
+        
+        for job in jobs:
+            with st.expander(f"📋 {job['title']} ({job['created_at'][:10]})"):
+                st.markdown(f"**Job Description:**")
+                st.text(job['description'][:300] + "...")
+                
+                try:
+                    rankings = self.db.get_rankings_by_job(job['id'])
+                except Exception as e:
+                    st.warning(f"Could not load rankings: {str(e)}")
+                    rankings = []
+                
+                if rankings:
+                    st.markdown(f"**📊 {len(rankings)} Candidates Ranked**")
+                    
+                    sorted_rankings = sorted(rankings, 
+                                           key=lambda x: x['overall_score'], 
+                                           reverse=True)
+                    
+                    st.markdown("**Top 3:**")
+                    for i, rank in enumerate(sorted_rankings[:3], 1):
+                        col1, col2 = st.columns([3, 1])
+                        with col1:
+                            st.write(f"{i}. Candidate #{i}")
+                        with col2:
+                            st.write(f"**{rank['overall_score']:.1f}%**")
+                    
+                    def load_results(job_id, rankings_data):
+                        formatted_rankings = []
+                        for idx, rank in enumerate(rankings_data, 1):
+                            formatted_rankings.append({
+                                'name': f"Candidate #{idx}",
+                                'email': 'N/A',
+                                'phone': 'N/A',
+                                'overall_score': rank['overall_score'],
+                                'skills_score': rank.get('skills_score', 0),
+                                'experience_score': rank.get('experience_score', 0),
+                                'education_score': rank.get('education_score', 0),
+                                'total_experience': 0,
+                                'matched_skills': rank.get('matched_skills', []),
+                                'missing_skills': rank.get('missing_skills', []),
+                                'explanation': rank.get('explanation', {})
+                            })
+                        st.session_state.ranked_candidates = formatted_rankings
+                    
+                    if st.button(f"📊 View Full Results", 
+                               key=f"view_{job['id']}", 
+                               use_container_width=True,
+                               on_click=load_results,
+                               args=(job['id'], sorted_rankings)):
+                        st.success("Results loaded! Go to Rankings tab.")
+                else:
+                    st.info("No rankings for this job yet.")
+    
+    def page_search(self):
+        """Search candidates by skills"""
+        st.header("🔍 Search Candidates")
+        
+        if not self.db_available:
+            st.warning("⚠️ Database not available. Search feature requires database connection.")
+            st.info("You can view uploaded resumes in the 'Upload Resumes' tab.")
+            if st.button("Go to Upload Resumes"):
+                self.navigate_to('Upload Resumes')
+            return
+        
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            search_skill = st.text_input(
+                "Enter skill to search",
+                placeholder="e.g., Python, React, AWS, Machine Learning"
+            )
+        
+        with col2:
+            st.write("")
+            st.write("")
+            search_button = st.button("🔍 Search", use_container_width=True, type="primary")
+        
+        if search_button and search_skill:
+            with st.spinner(f"Searching for '{search_skill}'..."):
+                try:
+                    results = self.db.search_candidates_by_skill(search_skill)
+                except Exception as e:
+                    st.error(f"Search failed: {str(e)}")
+                    return
+                
+                if results:
+                    st.success(f"Found {len(results)} candidates with '{search_skill}'")
+                    
+                    for resume in results:
+                        data = resume['parsed_data']
+                        name = data['contact'].get('name', 'Unknown')
+                        
+                        with st.expander(f"📄 {name}"):
+                            col_a, col_b = st.columns(2)
+                            
+                            with col_a:
+                                st.markdown("**Contact:**")
+                                st.write(f"📧 {data['contact'].get('email', 'N/A')}")
+                                st.write(f"📱 {data['contact'].get('phone', 'N/A')}")
+                            
+                            with col_b:
+                                st.markdown("**Experience:**")
+                                st.write(f"⏱️ {data.get('total_experience_years', 0)} years")
+                                st.write(f"💼 {len(data.get('experience', []))} jobs")
+                            
+                            st.markdown("**Skills:**")
+                            all_skills = []
+                            for skills in data.get('skills', {}).values():
+                                all_skills.extend(skills)
+                            
+                            if all_skills:
+                                skills_text = ", ".join(all_skills[:15])
+                                st.write(skills_text)
+                                
+                                if len(all_skills) > 15:
+                                    st.caption(f"+{len(all_skills) - 15} more skills")
+                            else:
+                                st.write("No skills found")
+                else:
+                    st.warning(f"No candidates found with skill '{search_skill}'")
+                    st.info("💡 Try searching for: Python, JavaScript, AWS, Machine Learning, React")
+        
+        elif search_button and not search_skill:
+            st.error("Please enter a skill to search!")
+    
+    # ==================== EXISTING PAGES ====================
     
     def page_upload_resumes(self):
         """Resume upload and parsing page"""
@@ -149,7 +521,6 @@ class ResumeShortlistingApp:
             st.markdown("### Upload Resume Files")
             st.markdown("Supported formats: **PDF, DOCX**")
             
-            # File uploader
             uploaded_files = st.file_uploader(
                 "Choose resume files",
                 type=['pdf', 'docx'],
@@ -170,11 +541,9 @@ class ResumeShortlistingApp:
                             for r in st.session_state.parsed_resumes) / len(st.session_state.parsed_resumes)
                 st.info(f"**Avg Experience:** {avg_exp:.1f} years")
         
-        # Display parsed resumes
         if st.session_state.parsed_resumes:
             st.markdown("---")
             st.markdown("### 📋 Parsed Resumes")
-            
             self.display_parsed_resumes()
     
     def parse_uploaded_files(self, uploaded_files):
@@ -188,26 +557,32 @@ class ResumeShortlistingApp:
             status_text.text(f"Parsing: {uploaded_file.name}")
             
             try:
-                # Save file temporarily
                 temp_path = f"temp_{uploaded_file.name}"
                 with open(temp_path, "wb") as f:
                     f.write(uploaded_file.getbuffer())
                 
-                # Parse resume
                 resume_data = self.parser.parse_resume(temp_path)
                 resume_data['filename'] = uploaded_file.name
                 
-                # Add to session state
+                # Save to database if available
+                if self.db_available:
+                    try:
+                        resume_id = self.db.save_resume(uploaded_file.name, resume_data)
+                        resume_data['id'] = resume_id
+                        self.db.log_action('resume_uploaded', {'filename': uploaded_file.name})
+                    except Exception as e:
+                        st.warning(f"Database save failed: {str(e)}")
+                
                 st.session_state.parsed_resumes.append(resume_data)
                 parsed_count += 1
                 
                 # Clean up temp file
-                os.remove(temp_path)
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
                 
             except Exception as e:
                 st.error(f"Failed to parse {uploaded_file.name}: {str(e)}")
             
-            # Update progress
             progress_bar.progress((i + 1) / len(uploaded_files))
         
         status_text.empty()
@@ -239,16 +614,16 @@ class ResumeShortlistingApp:
                     total_skills = sum(len(v) for v in resume.get('skills', {}).values())
                     st.write(f"🛠️ {total_skills} skills")
                     
-                    # Show top skills
                     all_skills = []
                     for skills in resume.get('skills', {}).values():
                         all_skills.extend(skills)
                     if all_skills:
                         st.write(f"Top: {', '.join(all_skills[:3])}")
                 
-                # Delete button
-                if st.button(f"🗑️ Remove", key=f"remove_{i}"):
-                    st.session_state.parsed_resumes.pop(i)
+                def remove_resume(index):
+                    st.session_state.parsed_resumes.pop(index)
+                
+                if st.button(f"🗑️ Remove", key=f"remove_{i}", on_click=remove_resume, args=(i,)):
                     st.rerun()
     
     def page_job_description(self):
@@ -260,7 +635,6 @@ class ResumeShortlistingApp:
         with col1:
             st.markdown("### Enter Job Requirements")
             
-            # Job description input
             job_description = st.text_area(
                 "Paste the complete job description here:",
                 value=st.session_state.job_description,
@@ -287,9 +661,11 @@ Nice to Have:
             
             col_btn1, col_btn2 = st.columns(2)
             
+            def use_sample():
+                st.session_state.job_description = self.get_sample_job_description()
+            
             with col_btn1:
-                if st.button("✨ Use Sample Job", use_container_width=True):
-                    st.session_state.job_description = self.get_sample_job_description()
+                if st.button("✨ Use Sample Job", use_container_width=True, on_click=use_sample):
                     st.rerun()
             
             with col_btn2:
@@ -305,21 +681,23 @@ Nice to Have:
             if job_description:
                 st.markdown("### 🔍 Job Analysis")
                 
-                # Parse and display job info
-                job_data = self.job_parser.parse_job_description(job_description)
-                
-                st.info(f"**Position:** {job_data['title']}")
-                st.info(f"**Min Experience:** {job_data['min_experience']} years")
-                
-                if job_data['required_skills']:
-                    with st.expander("Required Skills"):
-                        for skill in job_data['required_skills'][:10]:
-                            st.write(f"• {skill}")
-                
-                if job_data['preferred_skills']:
-                    with st.expander("Preferred Skills"):
-                        for skill in job_data['preferred_skills'][:10]:
-                            st.write(f"• {skill}")
+                try:
+                    job_data = self.job_parser.parse_job_description(job_description)
+                    
+                    st.info(f"**Position:** {job_data['title']}")
+                    st.info(f"**Min Experience:** {job_data['min_experience']} years")
+                    
+                    if job_data['required_skills']:
+                        with st.expander("Required Skills"):
+                            for skill in job_data['required_skills'][:10]:
+                                st.write(f"• {skill}")
+                    
+                    if job_data['preferred_skills']:
+                        with st.expander("Preferred Skills"):
+                            for skill in job_data['preferred_skills'][:10]:
+                                st.write(f"• {skill}")
+                except Exception as e:
+                    st.warning(f"Job parsing error: {str(e)}")
     
     def match_candidates(self, job_description):
         """Match candidates with job description"""
@@ -330,14 +708,29 @@ Nice to Have:
                     job_description
                 )
                 st.session_state.ranked_candidates = ranked
-                st.success(f"✅ Ranked {len(ranked)} candidates!")
                 
-                # Switch to rankings page
-                st.session_state.page = 'Rankings'
-                st.rerun()
+                job_data = self.job_parser.parse_job_description(job_description)
+                st.session_state.current_job_title = job_data['title']
+                
+                # Save to database if available
+                if self.db_available:
+                    try:
+                        job_id = self.db.save_job_posting(
+                            job_data['title'],
+                            job_description,
+                            job_data
+                        )
+                        st.session_state.current_job_id = job_id
+                        
+                        self.db.save_ranking(job_id, ranked)
+                    except Exception as e:
+                        st.warning(f"Could not save to database: {str(e)}")
+                
+                st.success(f"✅ Ranked {len(ranked)} candidates! Go to Rankings tab to view results.")
                 
             except Exception as e:
                 st.error(f"Matching failed: {str(e)}")
+                st.info("Please check your ranking configuration and try again.")
     
     def page_rankings(self):
         """Display ranked candidates"""
@@ -345,14 +738,14 @@ Nice to Have:
         
         if not st.session_state.ranked_candidates:
             st.warning("⚠️ No rankings yet! Please match candidates with a job description first.")
+            if st.button("Go to Job Description"):
+                self.navigate_to('Job Description')
             return
         
-        # Summary metrics
         self.display_ranking_metrics()
         
         st.markdown("---")
         
-        # Filter options
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -366,7 +759,6 @@ Nice to Have:
             default_count = min(5, max_candidates)
             show_count = st.number_input("Show Top N", 1, max_candidates, default_count)
         
-        # Filter and sort
         filtered = [c for c in st.session_state.ranked_candidates if c['overall_score'] >= min_score]
         
         if sort_by == "Skills Score":
@@ -378,11 +770,9 @@ Nice to Have:
         
         st.markdown(f"### Showing {len(filtered)} Candidates")
         
-        # Display candidates
         for i, candidate in enumerate(filtered, 1):
             self.display_candidate_card(i, candidate)
         
-        # Export options
         st.markdown("---")
         col1, col2 = st.columns(2)
         
@@ -393,6 +783,7 @@ Nice to Have:
         with col2:
             if st.button("📊 Download Report (CSV)", use_container_width=True):
                 self.download_csv_report()
+    
     def display_ranking_metrics(self):
         """Display summary metrics for rankings"""
         col1, col2, col3, col4 = st.columns(4)
@@ -419,7 +810,6 @@ Nice to Have:
         """Display individual candidate card"""
         score = candidate['overall_score']
         
-        # Determine score class
         if score >= 80:
             score_class = "score-excellent"
             emoji = "🟢"
@@ -434,7 +824,6 @@ Nice to Have:
             status = "MODERATE MATCH"
         
         with st.expander(f"{emoji} **RANK #{rank}: {candidate['name']}** - {score:.1f}% ({status})", expanded=(rank <= 3)):
-            # Basic info
             col1, col2 = st.columns([2, 1])
             
             with col1:
@@ -446,7 +835,6 @@ Nice to Have:
                 st.markdown("**Overall Score**")
                 st.markdown(f"<h1 class='{score_class}'>{score:.1f}%</h1>", unsafe_allow_html=True)
             
-            # Score breakdown
             st.markdown("---")
             st.markdown("### 📊 Score Breakdown")
             
@@ -470,7 +858,6 @@ Nice to Have:
             fig.update_layout(height=250, showlegend=False)
             st.plotly_chart(fig, use_container_width=True, key=f"score_chart_rank_{rank}")
             
-            # Skills analysis
             col1, col2 = st.columns(2)
             
             with col1:
@@ -493,27 +880,27 @@ Nice to Have:
                 else:
                     st.markdown("*All required skills present*")
             
-            # Explanation
             st.markdown("---")
             st.markdown("### 💡 Assessment")
             
-            exp = candidate['explanation']
-            st.info(exp['summary'])
-            
-            if exp['strengths']:
-                st.markdown("**Strengths:**")
-                for strength in exp['strengths']:
-                    st.markdown(f"• {strength}")
-            
-            if exp['weaknesses']:
-                st.markdown("**Weaknesses:**")
-                for weakness in exp['weaknesses']:
-                    st.markdown(f"• {weakness}")
-            
-            if exp['recommendations']:
-                st.markdown("**Recommendation:**")
-                for rec in exp['recommendations']:
-                    st.success(rec)
+            exp = candidate.get('explanation', {})
+            if isinstance(exp, dict):
+                st.info(exp.get('summary', 'No summary available'))
+                
+                if exp.get('strengths'):
+                    st.markdown("**Strengths:**")
+                    for strength in exp['strengths']:
+                        st.markdown(f"• {strength}")
+                
+                if exp.get('weaknesses'):
+                    st.markdown("**Weaknesses:**")
+                    for weakness in exp['weaknesses']:
+                        st.markdown(f"• {weakness}")
+                
+                if exp.get('recommendations'):
+                    st.markdown("**Recommendation:**")
+                    for rec in exp['recommendations']:
+                        st.success(rec)
 
     def page_analytics(self):
         """Analytics and insights page"""
@@ -521,11 +908,12 @@ Nice to Have:
         
         if not st.session_state.ranked_candidates:
             st.warning("No data to analyze. Please rank candidates first!")
+            if st.button("Go to Job Description"):
+                self.navigate_to('Job Description')
             return
         
         candidates = st.session_state.ranked_candidates
         
-        # Score distribution
         st.markdown("### Score Distribution")
         
         scores = [c['overall_score'] for c in candidates]
@@ -538,14 +926,13 @@ Nice to Have:
         )
         st.plotly_chart(fig, use_container_width=True, key="score_distribution")
         
-        # Skills analysis
         col1, col2 = st.columns(2)
         
         with col1:
             st.markdown("### Most Common Skills")
             all_matched_skills = []
             for c in candidates:
-                all_matched_skills.extend(c['matched_skills'])
+                all_matched_skills.extend(c.get('matched_skills', []))
             
             if all_matched_skills:
                 skills_count = pd.Series(all_matched_skills).value_counts().head(10)
@@ -557,12 +944,14 @@ Nice to Have:
                 )
                 fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True, key="common_skills")
+            else:
+                st.info("No matched skills data available")
         
         with col2:
             st.markdown("### Most Missing Skills")
             all_missing_skills = []
             for c in candidates:
-                all_missing_skills.extend(c['missing_skills'])
+                all_missing_skills.extend(c.get('missing_skills', []))
             
             if all_missing_skills:
                 missing_count = pd.Series(all_missing_skills).value_counts().head(10)
@@ -575,12 +964,13 @@ Nice to Have:
                 )
                 fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True, key="missing_skills")
+            else:
+                st.info("No missing skills data available")
         
-        # Experience vs Score
         st.markdown("### Experience vs Match Score")
         
         exp_data = pd.DataFrame({
-            'Experience': [c['total_experience'] for c in candidates],
+            'Experience': [c.get('total_experience', 0) for c in candidates],
             'Score': [c['overall_score'] for c in candidates],
             'Name': [c['name'] for c in candidates]
         })
@@ -627,9 +1017,9 @@ Nice to Have:
                 'Skills Score': c['skills_score'],
                 'Experience Score': c['experience_score'],
                 'Education Score': c['education_score'],
-                'Total Experience': c['total_experience'],
-                'Matched Skills': ', '.join(c['matched_skills'][:5]),
-                'Missing Skills': ', '.join(c['missing_skills'][:5])
+                'Total Experience': c.get('total_experience', 0),
+                'Matched Skills': ', '.join(c.get('matched_skills', [])[:5]),
+                'Missing Skills': ', '.join(c.get('missing_skills', [])[:5])
             })
         
         df = pd.DataFrame(csv_data)
@@ -641,43 +1031,44 @@ Nice to Have:
             file_name=f"ranking_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
             mime="text/csv"
         )
-
     
     def get_sample_job_description(self):
-            """Return sample job description"""
-            return """Senior Python Developer
+        """Return sample job description"""
+        return """Senior Python Developer
 
-    We are seeking an experienced Python Developer to join our AI/ML team.
+We are seeking an experienced Python Developer to join our AI/ML team.
 
-    Requirements:
-    - 3-5 years of professional Python development experience
-    - Strong experience with Machine Learning frameworks (TensorFlow, PyTorch)
-    - Experience with cloud platforms (AWS preferred)
-    - Bachelor's degree in Computer Science or related field
+Requirements:
+- 3-5 years of professional Python development experience
+- Strong experience with Machine Learning frameworks (TensorFlow, PyTorch)
+- Experience with cloud platforms (AWS preferred)
+- Bachelor's degree in Computer Science or related field
 
-    Must Have Skills:
-    - Python (expert level)
-    - Machine Learning & Deep Learning
-    - TensorFlow or PyTorch
-    - SQL databases (MySQL, PostgreSQL)
-    - REST API development
-    - Git version control
+Must Have Skills:
+- Python (expert level)
+- Machine Learning & Deep Learning
+- TensorFlow or PyTorch
+- SQL databases (MySQL, PostgreSQL)
+- REST API development
+- Git version control
 
-    Nice to Have:
-    - AWS/Azure/GCP experience
-    - Docker and Kubernetes
-    - React or frontend experience
-    - Experience with NLP projects
-    - CI/CD pipelines
+Nice to Have:
+- AWS/Azure/GCP experience
+- Docker and Kubernetes
+- React or frontend experience
+- Experience with NLP projects
+- CI/CD pipelines
 
-    Responsibilities:
-    - Develop and deploy machine learning models
-    - Build scalable ML pipelines
-    - Collaborate with data scientists and engineers
-    - Write clean, maintainable, well-documented code
-    - Participate in code reviews
-    """
-    # Main application entry point
+Responsibilities:
+- Develop and deploy machine learning models
+- Build scalable ML pipelines
+- Collaborate with data scientists and engineers
+- Write clean, maintainable, well-documented code
+- Participate in code reviews
+"""
+
+
+# Main application entry point
 if __name__ == "__main__":
-        app = ResumeShortlistingApp()
-        app.run()
+    app = ResumeShortlistingApp()
+    app.run()
